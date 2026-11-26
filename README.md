@@ -1,39 +1,46 @@
-# Frontend: CaixaLetra e organização de ideias
+# Backend: CaixaLetra e organização de ideias
 
-Aplicação web (React + Vite) com duas partes: um catálogo pessoal de filmes, séries,
-animes e jogos (notas, reviews, listas e organização por ano e mês) e um espaço de
-organização de ideias com quadros infinitos (textos, imagens e conexões).
+API REST (Node.js + Express) de uma plataforma com duas partes: um catálogo pessoal de
+filmes, séries, animes e jogos (notas, reviews e listas) e um espaço de organização de
+ideias com quadros infinitos.
 
-- **Backend:** https://github.com/SEU-USUARIO/catalogo-ideias-backend
+- **Frontend:** https://github.com/DanielR6790/CaixaLetra-frontend
 - **Site publicado:** https://SEU-SITE.vercel.app
-- **API publicada:** https://SEU-BACKEND.onrender.com
+- **API publicada:** https://SEU-BACKEND.onrender.com (teste: `/api/health`)
+
+> A API roda no plano gratuito do Render: depois de 15 minutos sem uso ela "dorme", e a
+> primeira requisição leva cerca de 1 minuto.
 
 ## Tecnologias
-React 18, React Router, Vite, Supabase (login e envio de imagens), React Flow
-(quadro infinito) e CSS puro com variáveis (tema escuro e claro).
+Node.js 20+, Express, Supabase (PostgreSQL, Auth e Storage), Zod (validação), Helmet,
+CORS e limite de requisições. Busca em APIs externas: Cinemeta (filmes e séries),
+AniList (animes) e IGDB (jogos).
+
+## Como funciona a segurança
+- O login é feito no frontend com o Supabase Auth. Esta API valida o token em cada rota
+  privada e acessa o banco **em nome do usuário**, então o RLS do banco protege os dados
+  de cada pessoa.
+- As chaves privadas (IGDB) ficam só nas variáveis de ambiente deste serviço.
+- `database/hardening.sql` limita tamanhos e quantidades diretamente no banco.
 
 ## Rodar localmente
 ```bash
 npm install
 cp .env.example .env     # Windows: copy .env.example .env  (depois preencha)
-npm run dev              # http://localhost:5173
+npm run dev              # http://localhost:3001
 ```
-O backend precisa estar rodando (veja o repositório do backend).
+
+## Banco de dados (Supabase)
+Execute no SQL Editor, nesta ordem: `database/schema.sql`, `database/policies.sql`,
+`database/storage.sql` e `database/hardening.sql`.
 
 ## Variáveis de ambiente
-Todas começam com `VITE_` e ficam **visíveis no navegador**. Use apenas a chave pública
-`anon`, nunca chaves secretas.
+Veja `.env.example`: `FRONTEND_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+`IGDB_CLIENT_ID`, `IGDB_CLIENT_SECRET` e `NODE_ENV`.
 
-| Variável | Exemplo |
-|---|---|
-| `VITE_SUPABASE_URL` | URL do projeto Supabase |
-| `VITE_SUPABASE_ANON_KEY` | chave pública `anon` |
-| `VITE_API_URL` | `https://SEU-BACKEND.onrender.com/api` |
+## Testes de segurança
+`npm run check:security` usa duas contas de teste (variáveis `TEST_A_*` e `TEST_B_*`) e
+confere que uma conta não acessa os dados da outra.
 
-## Testes
-`npm test` roda os testes automáticos da lógica (datas, fuso horário, agrupamento por
-ano e mês, filtros, validações, cores e setas do quadro).
-
-## Publicação (Vercel)
-Framework: Vite · Build: `npm run build` · Saída: `dist`. O arquivo `vercel.json` faz as
-rotas internas funcionarem ao recarregar a página.
+## Publicação (Render)
+Build: `npm install` · Start: `npm start` · Health check: `/api/health`.
