@@ -1,0 +1,156 @@
+/* =====================================================================
+   ORGANIZAÇÃO DE IDEIAS: lista de projetos e quadro infinito
+   ===================================================================== */
+
+/* ---------- Lista de projetos ---------- */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: transform var(--transition), border-color var(--transition),
+    box-shadow var(--transition);
+}
+.project-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.project-card-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--text);
+}
+.project-card-main:hover {
+  text-decoration: none;
+}
+.project-card-main h3 {
+  font-size: 1.05rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+
+.project-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* ---------- Página do quadro ---------- */
+.board-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.board-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.board-title {
+  min-width: 0;
+  max-width: 40ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.05rem;
+}
+.board-bar-end {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.save-status {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.save-saving {
+  color: var(--info);
+}
+.save-error {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* O quadro ocupa todo o espaço que sobra abaixo da barra */
+.board-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.board-canvas-inner {
+  position: absolute;
+  inset: 0;
+}
+
+/* Dica sobre o quadro (legível tanto no fundo preto quanto no branco) */
+.board-hint {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  z-index: 5;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  transform: translateX(-50%);
+  border: 1px solid #3a4651;
+  border-radius: 999px;
+  background: rgba(20, 24, 28, 0.92);
+  color: #e8edf1;
+  font-size: 0.8rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  /* Desconta a barra superior do celular */
+  .board-page {
+    height: calc(100dvh - 3.5rem);
+  }
+  .board-bar-end {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .board-hint {
+    display: none;
+  }
+}

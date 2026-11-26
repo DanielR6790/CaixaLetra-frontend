@@ -1,0 +1,195 @@
+/* =====================================================================
+   ELEMENTOS DO QUADRO: caixas de texto e barra de formatação
+   ===================================================================== */
+
+/* Cores que dependem do FUNDO DO QUADRO (e não do tema do site).
+   Texto "automático": branco no fundo preto, preto no fundo branco. */
+.board-canvas[data-board-theme='dark'] {
+  --board-text: #ffffff;
+  --board-outline: rgba(255, 255, 255, 0.3);
+}
+.board-canvas[data-board-theme='light'] {
+  --board-text: #000000;
+  --board-outline: rgba(0, 0, 0, 0.3);
+}
+
+/* Dica na parte de baixo (a parte de cima fica para o botão "Adicionar texto") */
+.board-canvas .board-hint {
+  top: auto;
+  bottom: 0.75rem;
+}
+
+/* ---------- Caixa de texto ---------- */
+.board-text {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem 0.65rem;
+  overflow: hidden;
+  border: 1px dashed var(--board-outline);
+  border-radius: 6px;
+  line-height: 1.4;
+  cursor: grab;
+}
+.board-text-editing {
+  border-style: solid;
+  border-color: var(--accent);
+  cursor: text;
+}
+
+.board-text-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.board-text-placeholder {
+  color: inherit;
+  opacity: 0.55;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  text-align: left;
+}
+
+.board-text-input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  overflow-wrap: anywhere;
+}
+.board-text-input::placeholder {
+  color: inherit;
+  opacity: 0.5;
+}
+
+/* Alças de redimensionar */
+.board-resizer-line {
+  border-color: var(--accent) !important;
+}
+.board-resizer-handle {
+  width: 10px !important;
+  height: 10px !important;
+  border: 1px solid #ffffff !important;
+  border-radius: 2px !important;
+  background: var(--accent) !important;
+}
+
+/* ---------- Barra de formatação ---------- */
+.board-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  max-width: 92vw;
+  padding: 0.4rem 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 0.82rem;
+}
+
+.tb-sep {
+  width: 1px;
+  height: 1.4rem;
+  background: var(--border);
+}
+
+.tb-select {
+  height: 2rem;
+  padding: 0 0.4rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.tb-btn:hover {
+  border-color: var(--accent);
+}
+.tb-btn-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.tb-btn-danger {
+  color: var(--danger);
+}
+.tb-btn-danger:hover {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.tb-text-btn {
+  height: 2rem;
+  padding: 0 0.55rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.tb-text-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.tb-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+.tb-label {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+.tb-color input[type='color'] {
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.tb-color input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.tb-color input[type='color']::-webkit-color-swatch {
+  border: 0;
+  border-radius: 5px;
+}
+.tb-color input[type='color']::-moz-color-swatch {
+  border: 0;
+  border-radius: 5px;
+}

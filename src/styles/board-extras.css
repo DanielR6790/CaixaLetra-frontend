@@ -1,0 +1,120 @@
+/* =====================================================================
+   QUADRO: imagens, conexões (setas) e painel de ferramentas
+   ===================================================================== */
+
+/* Pontos de ligação: existem só para o quadro calcular as setas.
+   As setas usam a borda do elemento, então ficam invisíveis. */
+.board-handle {
+  width: 2px !important;
+  height: 2px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  opacity: 0;
+  pointer-events: none !important;
+}
+
+/* ---------- Imagem ---------- */
+.board-image {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--board-outline);
+  border-radius: 6px;
+  cursor: grab;
+}
+.board-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.board-image-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem;
+  color: var(--board-text);
+  opacity: 0.6;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* ---------- Modo conexão ---------- */
+.board-connecting .react-flow__node {
+  cursor: crosshair !important;
+}
+.board-connecting .board-text,
+.board-connecting .board-image {
+  cursor: crosshair;
+}
+/* Elemento de origem escolhido */
+.react-flow__node.board-node-source .board-text,
+.react-flow__node.board-node-source .board-image {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ---------- Painel de ferramentas (canto superior esquerdo) ---------- */
+.board-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: min(92vw, 560px);
+}
+.board-panel-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+/* Os botões ficam sobre o quadro (preto ou branco): usam as cores do SITE
+   para o texto continuar legível nos dois fundos. */
+.board-panel .btn-ghost,
+.board-panel .btn-danger {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+.board-panel .btn-danger {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.board-panel .btn-ghost:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.board-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+.board-banner-error {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.board-banner-close {
+  flex: none;
+  padding: 0.1rem 0.4rem;
+  background: none;
+  border: 0;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}

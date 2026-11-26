@@ -1,0 +1,24 @@
+
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Carregando…</title>
+    <script>
+      // Aplica o tema salvo antes de desenhar a página (evita "piscar").
+      // A chave "app-theme" é a mesma usada em contexts/ThemeContext.jsx.
+      try {
+        var saved = localStorage.getItem('app-theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
