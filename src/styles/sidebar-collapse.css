@@ -1,0 +1,58 @@
+/* =====================================================================
+   MENU LATERAL RECOLHÍVEL (computador)
+   ===================================================================== */
+
+/* O botão X do menu também aparece no computador (recolhe o menu).
+   Dois seletores de classe para vencer a regra do layout.css, que o esconde. */
+.app-shell .sidebar-close {
+  display: inline-flex;
+}
+
+/* Botão que reabre o menu: só existe com o menu recolhido, no computador */
+.menu-reopen {
+  display: none;
+}
+
+@media (min-width: 861px) {
+  /* Menu recolhido: o conteúdo ocupa a largura toda.
+     ".app-shell.app-shell-collapsed" (duas classes) vence o ".app-shell" do layout.css,
+     que é carregado depois deste arquivo e define as duas colunas. */
+  .app-shell.app-shell-collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-shell.app-shell-collapsed .sidebar {
+    display: none;
+  }
+
+  .app-shell.app-shell-collapsed .menu-reopen {
+    position: fixed;
+    top: 0.6rem;
+    left: 0.75rem;
+    z-index: 35;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    padding: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition);
+  }
+  .app-shell.app-shell-collapsed .menu-reopen:hover {
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+
+  /* Folga para o botão não ficar sobre o conteúdo */
+  .app-shell.app-shell-collapsed .board-bar {
+    padding-left: 3.75rem;
+  }
+  .app-shell.app-shell-collapsed .main-content {
+    padding-top: 3.5rem;
+  }
+}

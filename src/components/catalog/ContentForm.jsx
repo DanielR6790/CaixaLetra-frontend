@@ -35,12 +35,16 @@ export default function ContentForm({
   const [reviewText, setReviewText] = useState('');
   const [errors, setErrors] = useState({});
 
+  // Obras encontradas em uma API já têm o ano oficial de lançamento: ele fica travado.
+  // Se a API não trouxe o ano, a pessoa pode preenchê-lo.
+  const yearLocked = (initial.source ?? 'manual') !== 'manual' && Boolean(initial.year);
+
   function handleSubmit(event) {
     event.preventDefault();
 
     const found = {};
     if (!title.trim()) found.title = 'Informe o título.';
-    if (year.trim()) {
+    if (!yearLocked && year.trim()) {
       const number = Number(year);
       if (!/^\d{4}$/.test(year.trim()) || number < 1800 || number > 2200) {
         found.year = 'Informe um ano com 4 dígitos (ex.: 2019).';
@@ -52,7 +56,7 @@ export default function ContentForm({
 
     onSubmit({
       title: title.trim(),
-      releaseYear: year.trim() ? Number(year) : null,
+      releaseYear: yearLocked ? initial.year : year.trim() ? Number(year) : null,
       genre: genre.trim(),
       contentType: contentType.trim(),
       description: description.trim(),
@@ -88,10 +92,11 @@ export default function ContentForm({
           value={year}
           onChange={setYear}
           error={errors.year}
+          hint={yearLocked ? 'Definido pela fonte da obra e não pode ser alterado.' : undefined}
           inputMode="numeric"
           maxLength={4}
-          placeholder="Ex.: 2019"
-          disabled={submitting}
+          placeholder={yearLocked ? undefined : 'Ex.: 2019'}
+          disabled={submitting || yearLocked}
         />
         <TextField
           id="contentType"
