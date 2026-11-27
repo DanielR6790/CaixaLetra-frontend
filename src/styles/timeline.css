@@ -1,0 +1,58 @@
+/* =====================================================================
+   LINHA DO TEMPO: filtros de categoria e situação
+   ===================================================================== */
+.tl-filters {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.tl-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tl-filter-label {
+  flex: none;
+  min-width: 5.5rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Opção sem nenhuma obra: continua clicável, mas mais discreta */
+.tl-filters .chip-empty {
+  opacity: 0.55;
+}
+
+.tl-filter-clear {
+  margin-left: auto;
+  padding: 0.35rem 0.6rem;
+  background: none;
+  border: 0;
+  color: var(--link);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.tl-filter-clear:hover {
+  color: var(--text);
+}
+
+@media (max-width: 700px) {
+  .tl-filter-label {
+    width: 100%;
+  }
+  .tl-filter-clear {
+    margin-left: 0;
+  }
+}
