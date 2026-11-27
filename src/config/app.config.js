@@ -8,9 +8,9 @@ export const appConfig = {
   tagline: 'Catálogo, avaliação e organização de ideais em um só lugar',
 
   // Logotipo: enquanto não houver imagem, usa-se este texto curto.
-  logoText: 'MP',
+  logoText: 'CL',
   // Para usar uma imagem, coloque o arquivo em frontend/public e informe
-  // o caminho aqui. Exemplo: '/logo.svg'
+  // o caminho aqui. Exemplo: '/logo.svg' 
   logoUrl: null,
 
   // Cores da marca (valem para o tema escuro e para o claro)
