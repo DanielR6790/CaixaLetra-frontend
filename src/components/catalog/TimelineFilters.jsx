@@ -1,14 +1,18 @@
 import { categories, getCategoryBySlug } from '../../config/categories.js';
+import FavoritesToggle from './FavoritesToggle.jsx';
 
-// Filtros da linha do tempo: categoria e situação (avaliados / lista / todos).
-// Os números mostram quantas obras há em cada opção, dentro do OUTRO filtro escolhido.
+// Filtros da linha do tempo: categoria, situação (avaliados / lista / todos) e favoritos.
+// Os números mostram quantas obras há em cada opção, dentro dos OUTROS filtros escolhidos.
 export default function TimelineFilters({
   category,
   status,
+  favoritesOnly,
   categoryCounts,
   statusCounts,
+  favoritesCount,
   onCategoryChange,
   onStatusChange,
+  onFavoritesChange,
   onClear,
   hasFilters,
 }) {
@@ -76,6 +80,13 @@ export default function TimelineFilters({
             </button>
           );
         })}
+
+        <FavoritesToggle
+          variant="chip"
+          active={favoritesOnly}
+          count={favoritesCount}
+          onChange={onFavoritesChange}
+        />
 
         {hasFilters && (
           <button type="button" className="tl-filter-clear" onClick={onClear}>

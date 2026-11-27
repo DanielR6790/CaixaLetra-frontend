@@ -1,11 +1,12 @@
 import { SORT_OPTIONS, DEFAULT_DIRECTION } from '../../utils/catalogFilters.js';
+import FavoritesToggle from './FavoritesToggle.jsx';
 
-// Barra de filtros: nome, tipo e ordenação.
-export default function CatalogToolbar({ filters, onChange, types }) {
+// Barra de filtros: nome, tipo, ordenação e favoritos.
+export default function CatalogToolbar({ filters, onChange, types, favoritesCount }) {
   const set = (patch) => onChange({ ...filters, ...patch });
 
   return (
-    <div className="toolbar">
+    <div className="toolbar toolbar-with-favorites">
       <input
         type="search"
         value={filters.search}
@@ -49,6 +50,13 @@ export default function CatalogToolbar({ filters, onChange, types }) {
       >
         {filters.dir === 'asc' ? '↑ Crescente' : '↓ Decrescente'}
       </button>
+
+      <FavoritesToggle
+        variant="button"
+        active={Boolean(filters.favoritesOnly)}
+        count={favoritesCount}
+        onChange={(value) => set({ favoritesOnly: value })}
+      />
     </div>
   );
 }

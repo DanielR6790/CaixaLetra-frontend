@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Modal from '../common/Modal.jsx';
 import Alert from '../common/Alert.jsx';
 import Icon from '../common/Icon.jsx';
+import HeartIcon from '../common/HeartIcon.jsx';
 import ReviewForm from './ReviewForm.jsx';
 import CoverEditor from './CoverEditor.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
@@ -19,6 +20,7 @@ export default function ContentDetailModal({
   onClose,
   onChanged,
   onToggleConsumed,
+  onToggleFavorite,
   onRemove,
 }) {
   const { user } = useAuth();
@@ -97,6 +99,12 @@ export default function ContentDetailModal({
       if (!result.ok) throw new Error(result.message);
     });
 
+  const handleToggleFavorite = () =>
+    run(async () => {
+      const result = await onToggleFavorite(item);
+      if (!result.ok) throw new Error(result.message);
+    });
+
   async function handleRemove() {
     const extra = item.review ? ' Sua nota e sua review também serão apagadas.' : '';
     if (!window.confirm(`Remover "${item.title}" do catálogo?${extra}`)) return;
@@ -112,6 +120,7 @@ export default function ContentDetailModal({
   }
 
   const meta = [item.releaseYear, item.contentType, category?.name].filter(Boolean).join(' · ');
+  const favorite = Boolean(item.isFavorite);
 
   return (
     <Modal title={item.title} onClose={onClose} size="lg" closeDisabled={busy}>
@@ -149,6 +158,21 @@ export default function ContentDetailModal({
               Marcar como consumido
             </label>
           )}
+
+          <button
+            type="button"
+            className={
+              favorite
+                ? 'btn btn-ghost btn-sm fav-toggle fav-active'
+                : 'btn btn-ghost btn-sm fav-toggle'
+            }
+            onClick={handleToggleFavorite}
+            disabled={busy}
+            aria-pressed={favorite}
+          >
+            <HeartIcon filled={favorite} size={16} />
+            {favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          </button>
 
           {item.description && <p className="detail-description">{item.description}</p>}
         </div>

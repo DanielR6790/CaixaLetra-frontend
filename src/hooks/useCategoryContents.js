@@ -57,6 +57,30 @@ export function useCategoryContents(slug) {
     [replaceItem]
   );
 
+  // Marca/desmarca como favorito. Muda só o campo do coração (e não a obra inteira),
+  // então cliques rápidos seguidos não sobrescrevem outras alterações.
+  const setFavorite = useCallback((id, value) => {
+    setState((current) => ({
+      ...current,
+      items: current.items.map((item) => (item.id === id ? { ...item, isFavorite: value } : item)),
+    }));
+  }, []);
+
+  const toggleFavorite = useCallback(
+    async (item) => {
+      const next = !item.isFavorite;
+      setFavorite(item.id, next);
+      try {
+        await updateContent(item.id, { isFavorite: next });
+        return { ok: true };
+      } catch (err) {
+        setFavorite(item.id, !next);
+        return { ok: false, message: err.message };
+      }
+    },
+    [setFavorite]
+  );
+
   const removeItem = useCallback(async (item) => {
     try {
       await deleteContent(item.id);
@@ -70,5 +94,13 @@ export function useCategoryContents(slug) {
     }
   }, []);
 
-  return { ...state, reload: load, addItem, replaceItem, toggleConsumed, removeItem };
+  return {
+    ...state,
+    reload: load,
+    addItem,
+    replaceItem,
+    toggleConsumed,
+    toggleFavorite,
+    removeItem,
+  };
 }

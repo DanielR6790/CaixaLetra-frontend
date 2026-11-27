@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import HeartIcon from '../common/HeartIcon.jsx';
 import { getCategoryBySlug } from '../../config/categories.js';
 import { formatDateTime } from '../../utils/dates.js';
 import { STATUS_LABEL } from '../../utils/status.js';
@@ -77,7 +78,12 @@ export default function TimelineView({ items, timeZone, onOpen, showCategory = f
                       <span className="tl-placeholder" aria-hidden="true" />
                     )}
                     <span className="tl-text">
-                      <strong>{item.title}</strong>
+                      <strong>
+                        {item.isFavorite && (
+                          <HeartIcon filled size={14} className="tl-fav" label="Favorito" />
+                        )}
+                        {item.title}
+                      </strong>
                       <span className="muted">{meta || 'Sem detalhes'}</span>
                     </span>
                     <span className="tl-side">

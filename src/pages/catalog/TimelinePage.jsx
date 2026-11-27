@@ -21,61 +21,96 @@ const STATUS_FILTERS = {
 const STATUS_IDS = Object.keys(STATUS_FILTERS);
 
 // Linha do tempo geral: tudo o que foi adicionado, organizado por ano e mês.
-// Os filtros ficam no endereço (?categoria=jogos&status=avaliados), então
-// F5 e o botão "voltar" do navegador funcionam direito.
+// Os filtros ficam no endereço (?categoria=jogos&status=avaliados&favoritos=1),
+// então F5 e o botão "voltar" do navegador funcionam direito.
 export default function TimelinePage() {
   const { profile } = useProfile();
   const timeZone = profile?.timezone ?? 'America/Sao_Paulo';
-  const { items, loading, error, reload, replaceItem, toggleConsumed, removeItem } =
-    useCategoryContents('all');
+  const {
+    items,
+    loading,
+    error,
+    reload,
+    replaceItem,
+    toggleConsumed,
+    toggleFavorite,
+    removeItem,
+  } = useCategoryContents('all');
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedId, setSelectedId] = useState(null);
 
-  // Valores inválidos no endereço voltam para o padrão (todas / todos)
-  const category = getCategoryBySlug(searchParams.get('categoria')) ? searchParams.get('categoria') : 'all';
+  // Valores inválidos no endereço voltam para o padrão (todas / todos / sem favoritos)
+  const category = getCategoryBySlug(searchParams.get('categoria'))
+    ? searchParams.get('categoria')
+    : 'all';
   const rawStatus = searchParams.get('status');
   const status = STATUS_IDS.includes(rawStatus) ? rawStatus : 'todos';
-  const hasFilters = category !== 'all' || status !== 'todos';
+  const favoritesOnly = searchParams.get('favoritos') === '1';
+  const hasFilters = category !== 'all' || status !== 'todos' || favoritesOnly;
 
-  function applyFilters({ category: nextCategory = category, status: nextStatus = status }) {
+  function updateFilters({
+    category: nextCategory = category,
+    status: nextStatus = status,
+    favorites: nextFavorites = favoritesOnly,
+  }) {
     const next = new URLSearchParams(searchParams);
     if (nextCategory === 'all') next.delete('categoria');
     else next.set('categoria', nextCategory);
     if (nextStatus === 'todos') next.delete('status');
     else next.set('status', nextStatus);
+    if (nextFavorites) next.set('favoritos', '1');
+    else next.delete('favoritos');
     setSearchParams(next, { replace: true });
   }
 
-  // Quantas obras há em cada categoria, dentro da situação escolhida
+  // Quantas obras há em cada categoria, dentro da situação e dos favoritos escolhidos
   const categoryCounts = useMemo(() => {
     const matchStatus = STATUS_FILTERS[status];
     const counts = { all: 0 };
     for (const item of items) {
-      if (!matchStatus(item)) continue;
+      if (!matchStatus(item) || (favoritesOnly && !item.isFavorite)) continue;
       counts.all += 1;
       counts[item.categorySlug] = (counts[item.categorySlug] ?? 0) + 1;
     }
     return counts;
-  }, [items, status]);
+  }, [items, status, favoritesOnly]);
 
-  // Quantas obras há em cada situação, dentro da categoria escolhida
+  // Quantas obras há em cada situação, dentro da categoria e dos favoritos escolhidos
   const statusCounts = useMemo(() => {
-    const inCategory = category === 'all' ? items : items.filter((item) => item.categorySlug === category);
+    const pool = items.filter(
+      (item) =>
+        (category === 'all' || item.categorySlug === category) &&
+        (!favoritesOnly || item.isFavorite)
+    );
     return {
-      todos: inCategory.length,
-      avaliados: inCategory.filter(STATUS_FILTERS.avaliados).length,
-      lista: inCategory.filter(STATUS_FILTERS.lista).length,
+      todos: pool.length,
+      avaliados: pool.filter(STATUS_FILTERS.avaliados).length,
+      lista: pool.filter(STATUS_FILTERS.lista).length,
     };
-  }, [items, category]);
+  }, [items, category, favoritesOnly]);
+
+  // Quantos favoritos há, dentro da categoria e da situação escolhidas
+  const favoritesCount = useMemo(
+    () =>
+      items.filter(
+        (item) =>
+          item.isFavorite &&
+          (category === 'all' || item.categorySlug === category) &&
+          STATUS_FILTERS[status](item)
+      ).length,
+    [items, category, status]
+  );
 
   const filtered = useMemo(
     () =>
       items.filter(
         (item) =>
-          (category === 'all' || item.categorySlug === category) && STATUS_FILTERS[status](item)
+          (category === 'all' || item.categorySlug === category) &&
+          STATUS_FILTERS[status](item) &&
+          (!favoritesOnly || item.isFavorite)
       ),
-    [items, category, status]
+    [items, category, status, favoritesOnly]
   );
 
   // A obra aberta é lida da lista completa, então a janela continua certa
@@ -113,23 +148,30 @@ export default function TimelinePage() {
           <TimelineFilters
             category={category}
             status={status}
+            favoritesOnly={favoritesOnly}
             categoryCounts={categoryCounts}
             statusCounts={statusCounts}
+            favoritesCount={favoritesCount}
             hasFilters={hasFilters}
-            onCategoryChange={(value) => applyFilters({ category: value })}
-            onStatusChange={(value) => applyFilters({ status: value })}
-            onClear={() => applyFilters({ category: 'all', status: 'todos' })}
+            onCategoryChange={(value) => updateFilters({ category: value })}
+            onStatusChange={(value) => updateFilters({ status: value })}
+            onFavoritesChange={(value) => updateFilters({ favorites: value })}
+            onClear={() => updateFilters({ category: 'all', status: 'todos', favorites: false })}
           />
 
           {filtered.length === 0 ? (
             <div className="empty-state">
               <Icon name="calendar" size={36} />
               <h2>Nenhuma obra com esses filtros</h2>
-              <p>Tente outra categoria ou outra situação.</p>
+              <p>
+                {favoritesOnly
+                  ? 'Tente outra categoria ou outra situação, ou marque obras com o coração.'
+                  : 'Tente outra categoria ou outra situação.'}
+              </p>
               <button
                 type="button"
                 className="btn btn-ghost"
-                onClick={() => applyFilters({ category: 'all', status: 'todos' })}
+                onClick={() => updateFilters({ category: 'all', status: 'todos', favorites: false })}
               >
                 Limpar filtros
               </button>
@@ -137,7 +179,7 @@ export default function TimelinePage() {
           ) : (
             <TimelineView
               // Reinicia o ano e o mês escolhidos ao trocar de filtro
-              key={`${category}-${status}`}
+              key={`${category}-${status}-${favoritesOnly}`}
               items={filtered}
               timeZone={timeZone}
               showCategory={category === 'all'}
@@ -155,6 +197,7 @@ export default function TimelinePage() {
           onClose={() => setSelectedId(null)}
           onChanged={replaceItem}
           onToggleConsumed={toggleConsumed}
+          onToggleFavorite={toggleFavorite}
           onRemove={removeItem}
         />
       )}

@@ -1,4 +1,5 @@
 import Icon from '../common/Icon.jsx';
+import HeartIcon from '../common/HeartIcon.jsx';
 import { formatDate } from '../../utils/dates.js';
 import { STATUS_LABEL } from '../../utils/status.js';
 
@@ -12,9 +13,11 @@ export default function ContentCard({
   showReview,
   onOpen,
   onToggle,
+  onToggleFavorite,
   onRemove,
 }) {
   const meta = [item.releaseYear, item.contentType].filter(Boolean).join(' · ');
+  const favorite = Boolean(item.isFavorite);
 
   return (
     <article className="media-card">
@@ -50,6 +53,21 @@ export default function ContentCard({
         >
           <Icon name="close" size={16} />
         </button>
+
+        <button
+          type="button"
+          className={favorite ? 'media-fav media-fav-active' : 'media-fav'}
+          onClick={() => onToggleFavorite(item)}
+          aria-pressed={favorite}
+          aria-label={
+            favorite
+              ? `Remover ${item.title} dos favoritos`
+              : `Adicionar ${item.title} aos favoritos`
+          }
+          title={favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+        >
+          <HeartIcon filled={favorite} size={16} />
+        </button>
       </div>
 
       <div className="media-info">
@@ -76,7 +94,7 @@ export default function ContentCard({
               checked={item.status === 'consumido'}
               onChange={() => onToggle(item)}
             />
-            consumido
+            Marcar como consumido
           </label>
         )}
       </div>

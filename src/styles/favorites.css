@@ -1,0 +1,90 @@
+/* =====================================================================
+   FAVORITOS: coração nos cards, na janela da obra, na linha do tempo e nos filtros
+   ===================================================================== */
+:root {
+  --favorite: #ff5d7a;
+}
+[data-theme='light'] {
+  --favorite: #e11d48;
+}
+
+/* ---------- Coração no card (canto inferior direito da capa) ---------- */
+.media-fav {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition), background var(--transition), transform var(--transition);
+}
+.media-card:hover .media-fav,
+.media-fav:focus-visible,
+.media-fav-active {
+  opacity: 1;
+}
+.media-fav:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: scale(1.1);
+}
+.media-fav-active {
+  color: var(--favorite);
+}
+/* Em telas de toque não existe "hover": o coração fica sempre visível */
+@media (hover: none) {
+  .media-fav {
+    opacity: 1;
+  }
+}
+
+/* ---------- Botões de filtro "Favoritos" ---------- */
+.chip.fav-chip,
+.btn.fav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.fav-chip svg,
+.fav-btn svg,
+.fav-toggle svg {
+  color: var(--favorite);
+}
+.chip.fav-chip.fav-active,
+.btn.fav-btn.fav-active,
+.btn.fav-toggle.fav-active {
+  background: color-mix(in srgb, var(--favorite) 18%, transparent);
+  border-color: var(--favorite);
+  color: var(--text);
+}
+
+/* ---------- Botão na janela da obra ---------- */
+.btn.fav-toggle {
+  margin-top: 0.25rem;
+}
+
+/* ---------- Barra de filtros das categorias: uma coluna a mais ---------- */
+.toolbar.toolbar-with-favorites {
+  grid-template-columns: minmax(160px, 1fr) auto auto auto auto;
+}
+@media (max-width: 700px) {
+  .toolbar.toolbar-with-favorites {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- Coração ao lado do título na linha do tempo ---------- */
+.tl-fav {
+  flex: none;
+  margin-right: 0.35rem;
+  vertical-align: -2px;
+  color: var(--favorite);
+}

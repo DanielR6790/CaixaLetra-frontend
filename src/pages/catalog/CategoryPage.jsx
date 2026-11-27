@@ -27,8 +27,17 @@ export default function CategoryPage() {
 function CategoryView({ category }) {
   const { profile } = useProfile();
   const timeZone = profile?.timezone ?? 'America/Sao_Paulo';
-  const { items, loading, error, reload, addItem, replaceItem, toggleConsumed, removeItem } =
-    useCategoryContents(category.slug);
+  const {
+    items,
+    loading,
+    error,
+    reload,
+    addItem,
+    replaceItem,
+    toggleConsumed,
+    toggleFavorite,
+    removeItem,
+  } = useCategoryContents(category.slug);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -76,6 +85,10 @@ function CategoryView({ category }) {
 
   const sectionItems = useMemo(() => items.filter(active.filter), [items, active]);
   const visibleItems = useMemo(() => applyFilters(sectionItems, filters), [sectionItems, filters]);
+  const favoritesCount = useMemo(
+    () => sectionItems.filter((item) => item.isFavorite).length,
+    [sectionItems]
+  );
   const types = useMemo(
     () => [...new Set(items.map((item) => item.contentType).filter(Boolean))].sort(),
     [items]
@@ -87,6 +100,12 @@ function CategoryView({ category }) {
   async function handleToggle(item) {
     setActionError('');
     const result = await toggleConsumed(item);
+    if (!result.ok) setActionError(result.message);
+  }
+
+  async function handleToggleFavorite(item) {
+    setActionError('');
+    const result = await toggleFavorite(item);
     if (!result.ok) setActionError(result.message);
   }
 
@@ -172,10 +191,19 @@ function CategoryView({ category }) {
 
         {!loading && !error && sectionItems.length > 0 && active.id !== 'datas' && (
           <>
-            <CatalogToolbar filters={filters} onChange={setFilters} types={types} />
+            <CatalogToolbar
+              filters={filters}
+              onChange={setFilters}
+              types={types}
+              favoritesCount={favoritesCount}
+            />
 
             {visibleItems.length === 0 ? (
-              <p className="muted">Nenhum resultado para os filtros escolhidos.</p>
+              <p className="muted">
+                {filters.favoritesOnly && favoritesCount === 0
+                  ? 'Nenhum favorito aqui ainda. Use o coração nas obras para marcá-las.'
+                  : 'Nenhum resultado para os filtros escolhidos.'}
+              </p>
             ) : (
               <div className="media-grid">
                 {visibleItems.map((item) => (
@@ -188,6 +216,7 @@ function CategoryView({ category }) {
                     showReview={active.id === 'avaliados'}
                     onOpen={(entry) => setSelectedId(entry.id)}
                     onToggle={handleToggle}
+                    onToggleFavorite={handleToggleFavorite}
                     onRemove={handleRemove}
                   />
                 ))}
@@ -215,6 +244,7 @@ function CategoryView({ category }) {
           onClose={() => setSelectedId(null)}
           onChanged={replaceItem}
           onToggleConsumed={toggleConsumed}
+          onToggleFavorite={toggleFavorite}
           onRemove={removeItem}
         />
       )}

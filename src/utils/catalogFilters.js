@@ -16,7 +16,13 @@ export const DEFAULT_DIRECTION = {
   content_type: 'asc',
 };
 
-export const DEFAULT_FILTERS = { search: '', type: '', sortBy: 'added_at', dir: 'desc' };
+export const DEFAULT_FILTERS = {
+  search: '',
+  type: '',
+  sortBy: 'added_at',
+  dir: 'desc',
+  favoritesOnly: false,
+};
 
 const getters = {
   added_at: (item) => Date.parse(item.addedAt),
@@ -26,12 +32,14 @@ const getters = {
   content_type: (item) => (item.contentType ?? '').toLowerCase() || null,
 };
 
-export function applyFilters(items, { search, type, sortBy, dir }) {
+export function applyFilters(items, { search, type, sortBy, dir, favoritesOnly = false }) {
   const term = search.trim().toLowerCase();
 
   const filtered = items.filter(
     (item) =>
-      (!term || item.title.toLowerCase().includes(term)) && (!type || item.contentType === type)
+      (!term || item.title.toLowerCase().includes(term)) &&
+      (!type || item.contentType === type) &&
+      (!favoritesOnly || Boolean(item.isFavorite))
   );
 
   const getValue = getters[sortBy] ?? getters.added_at;

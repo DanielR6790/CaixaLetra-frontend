@@ -15,6 +15,7 @@ import './styles/layout.css';
 import './styles/catalog.css';
 import './styles/details.css';
 import './styles/board.css';
+import './styles/favorites.css';
 
 applyBrand();
 warmUpBackend();
