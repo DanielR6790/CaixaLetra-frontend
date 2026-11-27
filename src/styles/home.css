@@ -1,0 +1,565 @@
+/* =====================================================================
+   PÁGINA INICIAL: busca, filtro, fila, avaliações, projetos e estatísticas
+   Usa só as variáveis dos temas, então vale para Escuro, Claro e Ardósia.
+   ===================================================================== */
+
+/* ---------- Cabeçalho ---------- */
+.home-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.home-header h1 {
+  font-size: 1.75rem;
+}
+.home-header p {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+}
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ---------- Busca ---------- */
+.home-search {
+  position: relative;
+  width: min(340px, 100%);
+}
+.home-search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.home-search-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.home-search-field input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--text);
+}
+.home-search-field input::placeholder {
+  color: var(--text-muted);
+}
+
+.home-search-results {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  z-index: 40;
+  max-height: 22rem;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+.home-search-empty {
+  padding: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.home-search-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.4rem;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.home-search-item[data-active='true'] {
+  background: var(--surface-2);
+}
+.home-search-thumb {
+  flex: none;
+  width: 32px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--border);
+}
+.home-search-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.home-search-text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Filtro de categoria ---------- */
+.home-chips .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ---------- Seções ---------- */
+.home-section {
+  margin-top: 1.75rem;
+}
+.home-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.9rem;
+}
+.home-section-head h2,
+.panel-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+}
+.home-section-head h2 svg,
+.panel-head h2 svg {
+  color: var(--accent);
+}
+.home-link {
+  color: var(--link);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ---------- Categoria colorida (selo) ---------- */
+.cat-filmes {
+  --cat-color: #60a5fa;
+}
+.cat-series {
+  --cat-color: #c084fc;
+}
+.cat-animes {
+  --cat-color: #f472b6;
+}
+.cat-jogos {
+  --cat-color: #34d399;
+}
+.cat-outros {
+  --cat-color: #fb923c;
+}
+.cat-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0.05rem 0.5rem;
+  background: color-mix(in srgb, var(--cat-color, var(--accent)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cat-color, var(--accent)) 45%, transparent);
+  border-radius: 999px;
+  /* mistura com a cor do texto do tema para manter o contraste no tema claro */
+  color: color-mix(in srgb, var(--cat-color, var(--accent)) 60%, var(--text));
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ---------- Fila ---------- */
+.queue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 0.9rem;
+}
+.queue-card {
+  display: flex;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--transition), border-color var(--transition),
+    box-shadow var(--transition);
+}
+.queue-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+.queue-cover,
+.review-cover {
+  flex: none;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+.queue-cover {
+  width: 72px;
+}
+.review-cover {
+  width: 62px;
+}
+.queue-cover img,
+.review-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.queue-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.queue-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.queue-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.queue-top svg {
+  flex: none;
+  color: var(--text-muted);
+}
+.queue-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.98rem;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.queue-meta {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.queue-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+/* ---------- Duas colunas: avaliações | projetos e estatísticas ---------- */
+.home-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(260px, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  margin-top: 1.75rem;
+}
+.home-column-stack {
+  display: grid;
+  gap: 1rem;
+}
+.home-card {
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ---------- Avaliações ---------- */
+.review-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.review-row {
+  display: flex;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.review-row:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+.review-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.review-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.review-title {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.review-date {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.review-score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.review-score-text {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.review-quote {
+  display: -webkit-box;
+  margin-top: 0.15rem;
+  padding: 0.55rem 0.7rem;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--accent);
+}
+.stars .star-outline {
+  opacity: 0.55;
+}
+
+/* ---------- Projetos ---------- */
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+.panel-empty {
+  display: grid;
+  justify-items: start;
+  gap: 0.6rem;
+}
+.panel-empty p {
+  margin: 0;
+}
+.project-mini-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.project-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  transition: border-color var(--transition);
+}
+.project-mini:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+.project-mini-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.project-mini-head .tile-icon {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+}
+.project-mini h3 {
+  overflow: hidden;
+  font-size: 0.95rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-mini p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.project-mini-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.project-mini-open {
+  color: var(--link);
+  font-weight: 600;
+}
+
+/* ---------- Estatísticas do mês ---------- */
+.stats-title {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.stats-period {
+  margin: 0.15rem 0 0.7rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.8rem 0.5rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+.stat strong {
+  color: var(--link);
+  font-size: 1.5rem;
+  line-height: 1.1;
+}
+.stat strong small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.stat span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+/* ---------- Escolha da categoria (Registrar obra) ---------- */
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+.picker-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.picker-btn:hover {
+  border-color: var(--accent);
+}
+.picker-btn .tile-icon {
+  flex: none;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin: 0;
+}
+
+/* ---------- Celular e tablet ---------- */
+@media (max-width: 900px) {
+  .home-columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .home-search {
+    width: 100%;
+  }
+  .home-actions {
+    width: 100%;
+  }
+  .queue-grid {
+    grid-template-columns: 1fr;
+  }
+  .review-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+}

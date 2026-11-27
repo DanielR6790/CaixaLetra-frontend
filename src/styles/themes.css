@@ -1,0 +1,87 @@
+/* =====================================================================
+   TEMAS ADICIONAIS: Ardósia (slate) e seletor de tema do menu
+   Os temas Escuro e Claro continuam em variables.css.
+   "html[data-theme=...]" tem mais força que os outros seletores, então
+   vence independentemente da ordem em que os arquivos são carregados.
+   ===================================================================== */
+html[data-theme='slate'] {
+  color-scheme: dark;
+
+  --bg: #0f172a; /* Slate 900: fundo da página */
+  --surface: #1e293b; /* Slate 800: menu, cards e janelas */
+  --surface-2: #273449; /* campos e blocos dentro dos cards */
+  --border: #334155; /* Slate 700: bordas e divisores */
+
+  --text: #f8fafc; /* Slate 50 */
+  --text-muted: #94a3b8; /* Slate 400 */
+
+  /* Destaque (esmeralda). O ThemeContext também aplica estes valores,
+     porque o applyBrand() os grava direto no <html>. */
+  --accent: #10b981;
+  --accent-hover: #059669;
+  --accent-text: #022c22;
+  --link: var(--accent);
+
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.12);
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.12);
+  --info: #38bdf8;
+  --info-bg: rgba(56, 189, 248, 0.12);
+  --shadow: 0 10px 30px rgba(2, 6, 23, 0.5);
+}
+
+/* ---------- Seletor de tema (rodapé do menu lateral) ---------- */
+.theme-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.4rem 0.2rem;
+  background: none;
+  border: 0;
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.theme-option:hover {
+  color: var(--text);
+}
+.theme-option[aria-checked='true'] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.theme-dot {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1px solid var(--text-muted);
+  border-radius: 50%;
+}
+.theme-dot-dark {
+  background: #14181c;
+}
+.theme-dot-light {
+  background: #f4f6f8;
+}
+.theme-dot-slate {
+  background: #0f172a;
+  border-color: #10b981;
+}

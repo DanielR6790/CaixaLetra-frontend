@@ -1,20 +1,26 @@
-import Icon from '../common/Icon.jsx';
 import { useTheme } from '../../hooks/useTheme.js';
+import { THEMES } from '../../contexts/ThemeContext.jsx';
 
-// Botão que alterna entre tema escuro e claro.
+// Seletor de tema do menu lateral: Escuro, Claro e Ardósia.
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === 'dark';
+  const { theme, setTheme } = useTheme();
 
   return (
-    <button
-      type="button"
-      className="nav-link nav-button"
-      onClick={toggleTheme}
-      aria-label={isDark ? 'Mudar para o tema claro' : 'Mudar para o tema escuro'}
-    >
-      <Icon name={isDark ? 'sun' : 'moon'} />
-      <span>{isDark ? 'Tema claro' : 'Tema escuro'}</span>
-    </button>
+    <div className="theme-picker" role="radiogroup" aria-label="Tema do site">
+      {THEMES.map((option) => (
+        <button
+          key={option.id}
+          type="button"
+          role="radio"
+          aria-checked={theme === option.id}
+          className="theme-option"
+          onClick={() => setTheme(option.id)}
+          title={`Tema ${option.label.toLowerCase()}`}
+        >
+          <span className={`theme-dot theme-dot-${option.id}`} aria-hidden="true" />
+          {option.label}
+        </button>
+      ))}
+    </div>
   );
 }
