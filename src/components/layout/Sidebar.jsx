@@ -50,10 +50,10 @@ export default function Sidebar({ onClose }) {
           <span>Linha do tempo</span>
         </NavLink>
 
-        <p className="nav-title">Ideias</p>
+        <p className="nav-title">Quadro infinito</p>
         <NavLink to="/ideias" className={linkClass}>
           <Icon name="lightbulb" />
-          <span>Organização de ideias</span>
+          <span>Quadros</span>
         </NavLink>
       </nav>
 
