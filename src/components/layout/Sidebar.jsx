@@ -1,20 +1,22 @@
 import { NavLink } from 'react-router-dom';
+import Avatar from '../common/Avatar.jsx';
 import Brand from '../common/Brand.jsx';
 import Icon from '../common/Icon.jsx';
-import ThemeToggle from './ThemeToggle.jsx';
 import { categories } from '../../config/categories.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useProfile } from '../../hooks/useProfile.js';
+import '../../styles/settings.css';
 
 const linkClass = ({ isActive }) => (isActive ? 'nav-link nav-link-active' : 'nav-link');
+const userLinkClass = ({ isActive }) =>
+  isActive ? 'user-box user-box-link user-box-active' : 'user-box user-box-link';
 
-// Menu lateral. "onClose" é usado apenas no celular (botão de fechar).
+// Menu lateral. "onClose" fecha a gaveta (celular) ou recolhe o menu (computador).
 export default function Sidebar({ onClose }) {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { profile } = useProfile();
 
   const displayName = profile?.username ?? user?.email ?? '';
-  const initial = displayName.charAt(0).toUpperCase() || '?';
 
   return (
     <div className="sidebar-inner">
@@ -48,32 +50,29 @@ export default function Sidebar({ onClose }) {
           <span>Linha do tempo</span>
         </NavLink>
 
-        <p className="nav-title">Projetos</p>
+        <p className="nav-title">Ideias</p>
         <NavLink to="/ideias" className={linkClass}>
           <Icon name="lightbulb" />
-          <span>Quadro infinito</span>
+          <span>Organização de ideias</span>
         </NavLink>
       </nav>
 
       <div className="sidebar-foot">
-        <ThemeToggle />
-        <div className="user-box">
-          <span className="avatar" aria-hidden="true">
-            {initial}
+        <NavLink
+          to="/configuracoes"
+          className={userLinkClass}
+          aria-label="Abrir as configurações do perfil"
+          title="Configurações"
+        >
+          <Avatar url={profile?.avatar_url} name={displayName} size={32} />
+          <span className="user-info">
+            <span className="user-name" title={displayName}>
+              {displayName}
+            </span>
+            <span className="user-sub">Configurações</span>
           </span>
-          <span className="user-name" title={displayName}>
-            {displayName}
-          </span>
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={() => signOut()}
-            aria-label="Sair da conta"
-            title="Sair"
-          >
-            <Icon name="logout" />
-          </button>
-        </div>
+          <Icon name="settings" size={18} />
+        </NavLink>
       </div>
     </div>
   );

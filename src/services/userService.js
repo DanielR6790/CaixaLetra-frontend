@@ -13,4 +13,13 @@ export async function getMe() {
   return data;
 }
 
+// patch: { username?, timezone?, avatarUrl? } (avatarUrl: null remove a foto). Devolve o perfil novo.
+export async function updateMe(patch) {
+  const data = await api.patch('/me', patch);
+  if (!data?.profile) {
+    throw new ApiError('O servidor respondeu sem os dados do perfil.', 500, 'EMPTY_PROFILE');
+  }
+  return data.profile;
+}
+
 export const getCategories = () => api.get('/categories');

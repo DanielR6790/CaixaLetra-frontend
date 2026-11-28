@@ -1,0 +1,367 @@
+/* =====================================================================
+   CONFIGURAÇÕES: botão do menu, página, temas, cor de destaque e zona de perigo
+   Usa só as variáveis dos temas, então vale para Escuro, Claro e Ardósia.
+   ===================================================================== */
+
+/* ---------- Foto de perfil (menu e configurações) ---------- */
+.avatar-img {
+  flex: none;
+  border-radius: 50%;
+  background: var(--surface-2);
+  object-fit: cover;
+}
+
+/* ---------- Botão do rodapé do menu: abre as configurações ---------- */
+.user-box-link {
+  padding: 0.45rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  transition: background var(--transition), border-color var(--transition);
+}
+.user-box-link:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+  text-decoration: none;
+}
+.user-box-active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.user-box-link > svg {
+  flex: none;
+  color: var(--text-muted);
+}
+.user-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.user-sub {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+/* ---------- Página ---------- */
+.settings {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.settings-nav {
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.settings-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.settings-nav-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.settings-nav-btn[aria-current='page'] {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
+}
+.settings-nav-btn[aria-current='page'] svg {
+  color: var(--link);
+}
+.settings-signout {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  padding-top: 0.85rem;
+}
+.settings-signout:hover:not(:disabled) {
+  color: var(--danger);
+}
+
+.settings-content {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  animation: fade-in 0.25s ease;
+}
+.settings-card {
+  padding: 1.15rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.settings-card h2 {
+  margin-bottom: 0.35rem;
+  font-size: 1.1rem;
+}
+.settings-card > p {
+  margin: 0 0 1rem;
+}
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.settings-actions-start {
+  justify-content: flex-start;
+}
+.settings-since {
+  margin: 0;
+  font-size: 0.85rem;
+}
+.settings-text-btn {
+  margin-top: 0.4rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--link);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Lista de fusos horários */
+.field select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+/* ---------- Foto de perfil ---------- */
+.avatar-editor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.avatar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ---------- Temas ---------- */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+.theme-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.theme-card:hover {
+  border-color: var(--text-muted);
+}
+.theme-card-selected,
+.theme-card-selected:hover {
+  border-color: var(--accent);
+}
+.theme-card-label {
+  padding: 0 0.25rem 0.15rem;
+  font-size: 0.9rem;
+}
+.theme-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 78px;
+  border: 1px solid;
+  border-radius: 8px;
+}
+.theme-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 64%;
+  padding: 9px 10px;
+  border: 1px solid;
+  border-radius: 6px;
+}
+.theme-preview-card i {
+  display: block;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+.theme-preview-card i.short {
+  width: 60%;
+  opacity: 0.45;
+}
+.theme-preview-card b {
+  display: block;
+  width: 42%;
+  height: 8px;
+  margin-top: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Cor de destaque ---------- */
+.accent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+.accent-native {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  margin-top: 1.55rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.accent-native::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.accent-native::-webkit-color-swatch {
+  border: 0;
+  border-radius: 5px;
+}
+.accent-native::-moz-color-swatch {
+  border: 0;
+  border-radius: 5px;
+}
+.accent-row .field {
+  flex: 1;
+  max-width: 18rem;
+}
+.accent-row .field input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+}
+.swatch {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--border);
+  cursor: pointer;
+  transition: transform var(--transition);
+}
+.swatch:hover {
+  transform: scale(1.12);
+}
+.swatch-selected {
+  border-color: var(--bg);
+  box-shadow: 0 0 0 2px var(--text);
+}
+
+.contrast-warning {
+  margin: 0 0 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--info-bg);
+  border: 1px solid var(--info);
+  border-radius: var(--radius-sm);
+  color: var(--info);
+  font-size: 0.85rem;
+}
+.accent-sample {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--surface-2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+.accent-sample-link {
+  color: var(--link);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ---------- Zona de perigo ---------- */
+.settings-danger {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+}
+.settings-danger h2 {
+  color: var(--danger);
+}
+
+/* ---------- Celular e tablet ---------- */
+@media (max-width: 860px) {
+  .settings {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .settings-nav {
+    position: static;
+    flex-direction: row;
+    gap: 0.25rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-nav-btn {
+    flex: none;
+    width: auto;
+    white-space: nowrap;
+  }
+  .settings-signout {
+    margin: 0 0 0 auto;
+    border-top: 0;
+    padding-top: 0.6rem;
+  }
+}
+@media (max-width: 520px) {
+  .accent-row {
+    flex-direction: column;
+  }
+  .accent-native {
+    margin-top: 0;
+  }
+  .accent-row .field {
+    width: 100%;
+    max-width: none;
+  }
+}

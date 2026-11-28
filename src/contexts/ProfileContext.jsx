@@ -26,9 +26,15 @@ export function ProfileProvider({ children }) {
     reload();
   }, [reload]);
 
+  // Usada depois de salvar o perfil: troca os dados na hora, em todo o site
+  const applyProfile = useCallback((next) => {
+    setProfile(next);
+    setError('');
+  }, []);
+
   const value = useMemo(
-    () => ({ profile, loading, error, reload }),
-    [profile, loading, error, reload]
+    () => ({ profile, loading, error, reload, applyProfile }),
+    [profile, loading, error, reload, applyProfile]
   );
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

@@ -11,6 +11,7 @@ import CategoryPage from './pages/catalog/CategoryPage.jsx';
 import TimelinePage from './pages/catalog/TimelinePage.jsx';
 import IdeasPage from './pages/ideas/IdeasPage.jsx';
 import ProjectBoardPage from './pages/ideas/ProjectBoardPage.jsx';
+import SettingsPage from './pages/settings/SettingsPage.jsx';
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/linha-do-tempo" element={<TimelinePage />} />
           <Route path="/ideias" element={<IdeasPage />} />
           <Route path="/ideias/:projectId" element={<ProjectBoardPage />} />
+          <Route path="/configuracoes" element={<SettingsPage />} />
         </Route>
       </Route>
 
