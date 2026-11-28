@@ -8,7 +8,7 @@ import { readableTextColor } from '../../utils/color.js';
 // - Duplo clique: edita o texto (Esc ou clicar fora termina).
 // - Arrastar: move. Alças nas bordas (quando selecionada): redimensiona.
 export default function TextNode({ id, data, selected }) {
-  const { updateData } = useBoardActions();
+  const { updateData, beginGesture, endGesture } = useBoardActions();
   const [editing, setEditing] = useState(Boolean(data.isNew));
   const textareaRef = useRef(null);
 
@@ -46,6 +46,8 @@ export default function TextNode({ id, data, selected }) {
         minHeight={40}
         lineClassName="board-resizer-line"
         handleClassName="board-resizer-handle"
+        onResizeStart={() => beginGesture()}
+        onResizeEnd={() => endGesture()}
       />
       <TextToolbar id={id} data={data} selected={selected} />
 

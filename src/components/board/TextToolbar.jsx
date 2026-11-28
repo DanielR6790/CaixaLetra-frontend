@@ -12,7 +12,7 @@ const ALIGNMENTS = [
 
 // Barra de formatação que aparece acima da caixa selecionada.
 export default function TextToolbar({ id, data, selected }) {
-  const { boardTheme, updateData } = useBoardActions();
+  const { boardTheme, updateData, duplicateSelected } = useBoardActions();
   const { deleteElements } = useReactFlow();
 
   const set = (patch) => updateData(id, patch);
@@ -128,10 +128,19 @@ export default function TextToolbar({ id, data, selected }) {
 
         <button
           type="button"
+          className="tb-btn"
+          onClick={() => duplicateSelected()}
+          aria-label="Duplicar"
+          title="Duplicar (Ctrl+D)"
+        >
+          <Icon name="copy" size={16} />
+        </button>
+        <button
+          type="button"
           className="tb-btn tb-btn-danger"
           onClick={() => deleteElements({ nodes: [{ id }] })}
           aria-label="Excluir caixa de texto"
-          title="Excluir"
+          title="Excluir (Ctrl+Z desfaz)"
         >
           <Icon name="trash" size={16} />
         </button>

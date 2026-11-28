@@ -36,6 +36,17 @@ const EDGE_TYPES = { floating: FloatingEdge };
 const IGNORE_DOUBLE_CLICK =
   '.react-flow__node, .react-flow__edge, .react-flow__controls, .react-flow__panel, .react-flow__attribution, .board-toolbar';
 
+// Texto que o Ctrl + C grava na área de transferência do sistema ao copiar elementos.
+// É assim que o Ctrl + V sabe se o que foi copiado por último foram elementos do quadro.
+const CLIP_MARKER = 'caixaletra-quadro:';
+
+// Campos de texto: neles, Ctrl + Z / C / V funcionam como em qualquer site
+const isEditableTarget = (target) =>
+  target instanceof Element &&
+  Boolean(target.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'));
+
+const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+
 function BoardInner({
   boardTheme,
   initialViewport,
@@ -51,6 +62,15 @@ function BoardInner({
   uploading,
   uploadError,
   onDismissUploadError,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
+  onCopyElements,
+  onPasteElements,
+  onDuplicate,
+  onGestureStart,
+  onGestureEnd,
 }) {
   const theme = THEMES[boardTheme] ?? THEMES.dark;
   const { screenToFlowPosition, deleteElements } = useReactFlow();
@@ -61,11 +81,6 @@ function BoardInner({
   // null = modo conexão desligado | { sourceId: null | id } = escolhendo origem/destino
   const [connectMode, setConnectMode] = useState(null);
   const [notice, setNotice] = useState('');
-
-  const actions = useMemo(
-    () => ({ boardTheme, updateData: onUpdateData }),
-    [boardTheme, onUpdateData]
-  );
 
   // Centro da parte visível do quadro, em coordenadas do quadro
   const visibleCenter = useCallback(() => {
@@ -81,6 +96,24 @@ function BoardInner({
   }, []);
 
   useEffect(() => () => clearTimeout(noticeTimer.current), []);
+
+  // Duplicar (botão das barras e Ctrl + D)
+  const handleDuplicate = useCallback(() => {
+    const result = onDuplicate();
+    if (!result.ok && !result.empty) showNotice(result.message);
+    return result;
+  }, [onDuplicate, showNotice]);
+
+  const actions = useMemo(
+    () => ({
+      boardTheme,
+      updateData: onUpdateData,
+      duplicateSelected: handleDuplicate,
+      beginGesture: onGestureStart,
+      endGesture: onGestureEnd,
+    }),
+    [boardTheme, onUpdateData, handleDuplicate, onGestureStart, onGestureEnd]
+  );
 
   // ---------- Texto ----------
   // Duplo clique no fundo: cria uma caixa de texto ali
@@ -101,23 +134,76 @@ function BoardInner({
     });
   }, [onAddText, visibleCenter]);
 
-  // ---------- Imagens ----------
-  // Ctrl + V: só reage se a área de transferência tiver uma IMAGEM
+  // ---------- Teclado: desfazer, refazer e duplicar ----------
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+      if (isEditableTarget(event.target) || document.querySelector('.modal-backdrop')) return;
+
+      const key = event.key.toLowerCase();
+      if (key === 'z') {
+        event.preventDefault();
+        if (event.shiftKey) onRedo();
+        else onUndo();
+      } else if (key === 'y') {
+        event.preventDefault();
+        onRedo();
+      } else if (key === 'd') {
+        const result = handleDuplicate();
+        // Sem nada selecionado, o Ctrl + D continua sendo do navegador (favoritos)
+        if (!result.empty) event.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [onUndo, onRedo, handleDuplicate]);
+
+  // ---------- Copiar elementos (Ctrl + C) ----------
+  useEffect(() => {
+    const onCopy = (event) => {
+      if (isEditableTarget(event.target) || document.querySelector('.modal-backdrop')) return;
+      // Se há texto selecionado na página, é uma cópia de texto normal
+      if (window.getSelection()?.toString()) return;
+
+      const copied = onCopyElements();
+      if (!copied) return;
+      event.preventDefault();
+      event.clipboardData.setData('text/plain', `${CLIP_MARKER}${copied.token}`);
+      showNotice(`${plural(copied.count, 'elemento copiado', 'elementos copiados')}. Ctrl+V cola.`);
+    };
+    document.addEventListener('copy', onCopy);
+    return () => document.removeEventListener('copy', onCopy);
+  }, [onCopyElements, showNotice]);
+
+  // ---------- Colar: imagens do sistema e elementos copiados (Ctrl + V) ----------
+  // Só reage se a área de transferência tiver uma IMAGEM ou elementos copiados no quadro
   // (colar texto continua funcionando normalmente nas caixas).
   useEffect(() => {
     const onPaste = (event) => {
       if (event.target instanceof Element && event.target.closest('.modal')) return;
+
       const images = Array.from(event.clipboardData?.files ?? []).filter((file) =>
         file.type.startsWith('image/')
       );
-      if (images.length === 0) return;
+      if (images.length > 0) {
+        event.preventDefault();
+        onAddImages(images, visibleCenter());
+        return;
+      }
+
+      if (isEditableTarget(event.target)) return;
+      const text = event.clipboardData?.getData('text/plain') ?? '';
+      if (!text.startsWith(CLIP_MARKER)) return;
+
       event.preventDefault();
-      onAddImages(images, visibleCenter());
+      const result = onPasteElements(text.slice(CLIP_MARKER.length), visibleCenter());
+      if (!result.ok) showNotice(result.message);
     };
     document.addEventListener('paste', onPaste);
     return () => document.removeEventListener('paste', onPaste);
-  }, [onAddImages, visibleCenter]);
+  }, [onAddImages, onPasteElements, visibleCenter, showNotice]);
 
+  // ---------- Imagens ----------
   // Arrastar arquivos do computador para dentro do quadro
   const handleDragOver = useCallback((event) => {
     if (!event.dataTransfer?.types?.includes('Files')) return;
@@ -210,20 +296,17 @@ function BoardInner({
     [edges, theme.arrow]
   );
 
-  // Antes de apagar (tecla Delete ou lixeira): confirma se há texto escrito ou imagem
-  const handleBeforeDelete = useCallback(async ({ nodes: toDelete }) => {
-    const hasImage = toDelete.some((node) => node.type === 'image');
-    const hasText = toDelete.some((node) => node.data?.text?.trim());
-    if (!hasImage && !hasText) return true;
+  // Excluir não pergunta mais: o Ctrl + Z desfaz
+  const handleNodesDelete = useCallback(
+    (deleted) => {
+      if (deleted.length > 0) showNotice('Excluído. Ctrl+Z desfaz.');
+    },
+    [showNotice]
+  );
 
-    let message = 'Excluir esta caixa de texto? Isso não pode ser desfeito.';
-    if (toDelete.length > 1) {
-      message = 'Excluir os elementos selecionados? Isso não pode ser desfeito.';
-    } else if (hasImage) {
-      message = 'Excluir esta imagem? O arquivo será apagado de vez e isso não pode ser desfeito.';
-    }
-    return window.confirm(message);
-  }, []);
+  // Arrastar e redimensionar contam como um passo só no desfazer
+  const handleGestureStart = useCallback(() => onGestureStart(), [onGestureStart]);
+  const handleGestureEnd = useCallback(() => onGestureEnd(), [onGestureEnd]);
 
   return (
     <BoardActionsContext.Provider value={actions}>
@@ -243,7 +326,11 @@ function BoardInner({
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeClick={handleNodeClick}
-            onBeforeDelete={handleBeforeDelete}
+            onNodesDelete={handleNodesDelete}
+            onNodeDragStart={handleGestureStart}
+            onNodeDragStop={handleGestureEnd}
+            onSelectionDragStart={handleGestureStart}
+            onSelectionDragStop={handleGestureEnd}
             deleteKeyCode="Delete"
             nodesConnectable={false}
             defaultViewport={initialViewport}
@@ -279,6 +366,26 @@ function BoardInner({
                 >
                   <Icon name="link" size={16} />
                   Conectar
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={onUndo}
+                  disabled={!canUndo}
+                  title="Desfazer (Ctrl+Z)"
+                >
+                  <Icon name="undo" size={16} />
+                  Desfazer
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={onRedo}
+                  disabled={!canRedo}
+                  title="Refazer (Ctrl+Y)"
+                >
+                  <Icon name="redo" size={16} />
+                  Refazer
                 </button>
                 {selectedEdges.length > 0 && (
                   <button type="button" className="btn btn-danger btn-sm" onClick={handleDeleteSelectedEdges}>
@@ -335,8 +442,8 @@ function BoardInner({
         </div>
 
         <p className="board-hint">
-          Arraste o fundo para mover · Roda do mouse para o zoom · Duplo clique no fundo cria um
-          texto · Cole (Ctrl + V) ou arraste imagens para o quadro
+          Arraste o fundo para mover · Zoom na roda do mouse · Duplo clique no fundo cria um texto ·
+          Shift + arrastar seleciona vários · Ctrl+Z desfaz · Ctrl+C e Ctrl+V copiam · Ctrl+D duplica
         </p>
       </div>
     </BoardActionsContext.Provider>

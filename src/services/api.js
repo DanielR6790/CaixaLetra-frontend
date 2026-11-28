@@ -33,7 +33,7 @@ function withTimeout(promise, ms, message, code) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
-async function request(path, { method = 'GET', params, body } = {}) {
+async function request(path, { method = 'GET', params, body, keepalive = false } = {}) {
   const {
     data: { session },
   } = await withTimeout(
@@ -52,12 +52,13 @@ async function request(path, { method = 'GET', params, body } = {}) {
     response = await fetch(`${API_URL}${path}${query}`, {
       method,
       cache: 'no-store', // nunca reaproveitar respostas guardadas
+      keepalive,
       headers: {
         Authorization: `Bearer ${session.access_token}`,
         ...(body ? { 'Content-Type': 'application/json' } : {}),
       },
       body: body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      ...(keepalive ? {} : { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) }),
     });
   } catch (error) {
     if (error?.name === 'TimeoutError') {
@@ -93,7 +94,7 @@ async function request(path, { method = 'GET', params, body } = {}) {
 
 export const api = {
   get: (path, params) => request(path, { params }),
-  post: (path, body) => request(path, { method: 'POST', body }),
+  post: (path, body, options) => request(path, { method: 'POST', body, ...options }),
   put: (path, body) => request(path, { method: 'PUT', body }),
   patch: (path, body) => request(path, { method: 'PATCH', body }),
   delete: (path) => request(path, { method: 'DELETE' }),

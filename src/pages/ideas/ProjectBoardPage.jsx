@@ -32,7 +32,7 @@ function ProjectBoard({ projectId }) {
   const [projectSave, setProjectSave] = useState('saved'); // posição, zoom e tema
   const [editing, setEditing] = useState(false);
 
-  // Elementos e conexões do quadro, com salvamento automático
+  // Elementos e conexões do quadro, com salvamento automático, desfazer e cópias
   const board = useBoardElements(projectId);
   // Envio de imagens (botão, Ctrl + V e arrastar)
   const images = useBoardImages({ projectId, addImage: board.addImage });
@@ -156,6 +156,12 @@ function ProjectBoard({ projectId }) {
       ? 'saving'
       : 'saved';
 
+  // Erros que não se resolvem sozinhos (ex.: limite do quadro) mostram o motivo
+  const errorLabel =
+    board.saveError && !board.saveError.retrying
+      ? `Erro ao salvar: ${board.saveError.message}`
+      : SAVE_LABEL.error;
+
   const isDark = project.boardTheme === 'dark';
 
   return (
@@ -176,7 +182,7 @@ function ProjectBoard({ projectId }) {
 
         <div className="board-bar-end">
           <span className={`save-status save-${saveState}`} role="status">
-            {SAVE_LABEL[saveState]}
+            {saveState === 'error' ? errorLabel : SAVE_LABEL[saveState]}
           </span>
           <button type="button" className="btn btn-ghost btn-sm" onClick={toggleBoardTheme}>
             <Icon name={isDark ? 'sun' : 'moon'} size={16} />
@@ -200,6 +206,15 @@ function ProjectBoard({ projectId }) {
         uploading={images.uploading}
         uploadError={images.error}
         onDismissUploadError={images.dismissError}
+        onUndo={board.undo}
+        onRedo={board.redo}
+        canUndo={board.canUndo}
+        canRedo={board.canRedo}
+        onCopyElements={board.copySelected}
+        onPasteElements={board.pasteClipboard}
+        onDuplicate={board.duplicateSelected}
+        onGestureStart={board.beginGesture}
+        onGestureEnd={board.endGesture}
       />
 
       {editing && (

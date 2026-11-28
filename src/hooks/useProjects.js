@@ -6,6 +6,7 @@ import {
   createProject,
   updateProject,
   deleteProject,
+  duplicateProject,
 } from '../services/projectService.js';
 
 export function useProjects() {
@@ -29,7 +30,7 @@ export function useProjects() {
     load();
   }, [load]);
 
-  // create e update lançam erro: quem chama (a janela do formulário) mostra a mensagem
+  // create, update e duplicate lançam erro: quem chama mostra a mensagem
   const create = useCallback(async (values) => {
     const data = await createProject(values);
     setState((current) => ({ ...current, projects: [data.project, ...current.projects] }));
@@ -46,6 +47,13 @@ export function useProjects() {
     return data.project;
   }, []);
 
+  // Cria "Nome (cópia)" com todo o conteúdo do quadro
+  const duplicate = useCallback(async (project) => {
+    const data = await duplicateProject(project.id);
+    setState((current) => ({ ...current, projects: [data.project, ...current.projects] }));
+    return data.project;
+  }, []);
+
   const remove = useCallback(async (project) => {
     try {
       await deleteProject(project.id);
@@ -59,5 +67,5 @@ export function useProjects() {
     }
   }, []);
 
-  return { ...state, reload: load, create, update, remove };
+  return { ...state, reload: load, create, update, duplicate, remove };
 }

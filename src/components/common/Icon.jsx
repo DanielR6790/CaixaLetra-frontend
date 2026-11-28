@@ -129,6 +129,24 @@ const PATHS = {
       <path d="M12 15V3" />
     </>
   ),
+  undo: (
+    <>
+      <path d="M9 14 4 9l5-5" />
+      <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+    </>
+  ),
+  redo: (
+    <>
+      <path d="m15 14 5-5-5-5" />
+      <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="8" y="8" width="14" height="14" rx="2" />
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 20, className }) {

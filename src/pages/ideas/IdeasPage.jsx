@@ -13,11 +13,13 @@ export default function IdeasPage() {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const timeZone = profile?.timezone ?? 'America/Sao_Paulo';
-  const { projects, loading, error, reload, create, update, remove } = useProjects();
+  const { projects, loading, error, reload, create, update, duplicate, remove } = useProjects();
 
   // null = nenhuma janela aberta | { mode: 'create' } | { mode: 'edit', project }
   const [form, setForm] = useState(null);
   const [actionError, setActionError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [duplicatingId, setDuplicatingId] = useState(null);
 
   async function handleDelete(project) {
     const confirmed = window.confirm(
@@ -27,8 +29,23 @@ export default function IdeasPage() {
     if (!confirmed) return;
 
     setActionError('');
+    setNotice('');
     const result = await remove(project);
     if (!result.ok) setActionError(result.message);
+  }
+
+  async function handleDuplicate(project) {
+    setActionError('');
+    setNotice('');
+    setDuplicatingId(project.id);
+    try {
+      const copy = await duplicate(project);
+      setNotice(`Projeto duplicado: “${copy.name}”.`);
+    } catch (err) {
+      setActionError(err.message);
+    } finally {
+      setDuplicatingId(null);
+    }
   }
 
   async function handleSubmit(values) {
@@ -55,6 +72,7 @@ export default function IdeasPage() {
       </header>
 
       {actionError && <Alert type="error">{actionError}</Alert>}
+      {notice && <Alert type="success">{notice}</Alert>}
 
       {loading && <Loading label="Carregando projetos…" />}
 
@@ -89,7 +107,10 @@ export default function IdeasPage() {
               key={project.id}
               project={project}
               timeZone={timeZone}
+              busy={duplicatingId === project.id}
+              duplicateDisabled={duplicatingId !== null}
               onEdit={(entry) => setForm({ mode: 'edit', project: entry })}
+              onDuplicate={handleDuplicate}
               onDelete={handleDelete}
             />
           ))}
