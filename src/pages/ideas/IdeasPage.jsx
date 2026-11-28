@@ -24,7 +24,7 @@ export default function IdeasPage() {
   async function handleDelete(project) {
     const confirmed = window.confirm(
       `Excluir o projeto "${project.name}"?\n\n` +
-        'Todo o quadro (textos, imagens e conexões) será apagado e isso não pode ser desfeito.'
+      'Todo o quadro (textos, imagens e conexões) será apagado e isso não pode ser desfeito.'
     );
     if (!confirmed) return;
 
@@ -62,8 +62,8 @@ export default function IdeasPage() {
     <div className="main-content">
       <header className="page-header page-header-row">
         <div>
-          <h1>Organização de ideias</h1>
-          <p>Seus projetos, cada um com um quadro infinito para organizar suas ideias.</p>
+          <h1>Projetos</h1>
+          <p>Seus projetos, cada um com um quadro infinito.</p>
         </div>
         <button type="button" className="btn btn-primary" onClick={() => setForm({ mode: 'create' })}>
           <Icon name="plus" size={18} />
