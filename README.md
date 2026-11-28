@@ -5,8 +5,8 @@ animes e jogos (notas, reviews, listas e organização por ano e mês) e um espa
 organização de ideias com quadros infinitos (textos, imagens e conexões).
 
 - **Backend:** https://github.com/DanielR6790/CaixaLetra-backend
-- **Site publicado:** https://SEU-SITE.vercel.app
-- **API publicada:** https://SEU-BACKEND.onrender.com
+- **Site publicado:** https://caixaletra.vercel.app/
+- **API publicada:** https://caixaletra-backend.onrender.com/
 
 ## Tecnologias
 React 18, React Router, Vite, Supabase (login e envio de imagens), React Flow
